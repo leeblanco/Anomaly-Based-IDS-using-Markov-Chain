@@ -10,8 +10,7 @@ import java.util.Map;
 public class fileManipulation {
 
 	static private HTTPRequest<String> addURL = new HTTPRequest<String>();
-	//static private HTTPRequest<String> learningPhase = new HTTPRequest<String>();
-	//private HTTPRequest<List<String>> addChars = new HTTPRequest<List<String>>();
+	static private HTTPRequest<String> addDetectedURL = new HTTPRequest<String>();
 	private HTTPRequest<Integer> storeChar = new HTTPRequest<Integer>();
 	
 	///home/dimaz/Documents/IDSTextFiles/SaturdayCharDistNormalSmall.txt
@@ -31,7 +30,7 @@ public class fileManipulation {
 							String convData = Character.toString(((char) readIntData)); 
 							addURL.addHTTPReq(convData);
 							//learningPhase.addHTTPReq(convData);
-							//addURL.putHTTPCharToTable(convData, ctr);						
+							addURL.putHTTPCharToTable(convData, ctr);						
 							ctr++;
 						}
 				readIntData = buff.read();
@@ -51,16 +50,41 @@ public class fileManipulation {
 		}
 	}
 	
-	
-	
-	//optional method debugging 
-	/*public void copyHTTPCharKeysFromMap(){
-		for (Map.Entry<List<String>, Double> entry: addMe.getTableOfInitProb().entrySet()){
-			addChars.addHTTPReq(entry.getKey());
+	public void openFileForDetection(){
+		try{
+			BufferedReader buff = new BufferedReader(new FileReader("/home/dimaz/Documents/IDSTextFiles/CharDistSunSmall2.txt"));
+			try{
+				Double ctr = 0.0;
+				int readIntData = buff.read(); //read txt file char by char
+				
+				while (readIntData!=-1){
+					
+						if (!(readIntData==13||readIntData==10)){ //if condition skips if ascii code for 10 = new line and 13 = carriage return is encountered
+							//storeChar.putHTTPCharToTable(readIntData, ctr);
+							//convert int to char or convert ascii code to human readable character then convert character value to String
+							String convData = Character.toString(((char) readIntData)); 
+							addDetectedURL.addHTTPReq(convData);
+							//learningPhase.addHTTPReq(convData);
+							addDetectedURL.putHTTPCharToTable(convData, ctr);						
+							ctr++;
+						}
+				readIntData = buff.read();
+				}
+			}
+			
+			finally{                   
+				buff.close();
+			}	
+			
 		}
-		
+		catch(FileNotFoundException e){
+			System.out.println("File not found"+e);
+		}
+		catch(IOException e){
+			System.out.println("oist exception");
+		}
+	}
 	
-	}*/
 	
 	public void showAddURLList(){
 		System.out.println("\nURL in List");
@@ -85,26 +109,11 @@ public class fileManipulation {
 		}
 	}
 	
-	
+	public HTTPRequest<String> getAddDetectedURL(){
+		return addDetectedURL;
+	}
 	public HTTPRequest<String> getAddURL(){
 		return addURL;
 	}
-	
-	/*
-	 * Convert URI and store in a list of characters sample 
-	 * from GET google.com and GET yahoo.com to List<String> G, E, T, , g, o, o, g, l, e,. ,c ,o ,m
-	 *  List<String> G, E, T, , g, o, o, g, l, e, ., c, o, m
-	 * 
-	public List<String> parseHTTPReqToCharbyChar(String getHTTP){ 
-		List<String> parsingReq = new ArrayList<String>();
-		String convChar=null;
-
-			for (int x = 0; x<getHTTP.length(); x++){
-				convChar = Character.toString(getHTTP.charAt(x));
-				parsingReq.add(convChar);
-			}
-
-		return parsingReq;
-	}*/
 
 }
