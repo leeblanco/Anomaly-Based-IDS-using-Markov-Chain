@@ -2,11 +2,13 @@ package com.markovdetection;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class LearningPhase extends TableOfInitialProbabilities {
 
-	private HTTPRequest<LinkedHashMap<String, Double>> tableCalculatedFreq = new HTTPRequest<LinkedHashMap<String, Double>>();
+	static private HTTPRequest<LinkedHashMap<String, Double>> tableCalculatedFreq = new HTTPRequest<LinkedHashMap<String, Double>>();
 	private HTTPRequest<Double> RowSummation = new HTTPRequest<Double>();
+	static private HTTPRequest<String> maps = new HTTPRequest<String>();
 	
 	public LearningPhase(){
 	}
@@ -56,10 +58,66 @@ public class LearningPhase extends TableOfInitialProbabilities {
 				RowSummation.addHTTPReq(sumTotalVal);
 			}
 		}
+		
+		else{
+			System.out.println("Get Table is empty");
+		}
+	}
+	
+	
+	/*Useful Method but wasn't use in the process
+	 *This method copies TableCalculatedFreq entries to maps. TableCalculatedFreq is List<Map<String, Double> while maps
+	 *is one dimensional LinkedHashMap<String, Double thus it is necessary to write the extra while loop to get the Key
+	 *and values. This method exists so that in the comparison later in Detection phase only two for loops will be created
+	 *which is O(n^2) instead or 3 for loops the same as the original code. 
+	 */
+	public void copyTableCalcFreqToOneDMap(){
+		if (tableCalculatedFreq.getListOfHttpReq().size()>0){
+			System.out.print("\nCopying calculated frequencies to one-D map");
+			for (LinkedHashMap<String, Double> mapEntry: tableCalculatedFreq.getListOfHttpReq()){
+				Iterator<String> iterKey = mapEntry.keySet().iterator();
+				Iterator<Double> iterVal = mapEntry.values().iterator();
+				
+				//System.out.print("\n Key-Value pair: ");
+				while (iterKey.hasNext() && iterVal.hasNext()){
+					String keys = iterKey.next();
+					Double value = iterVal.next();
+					maps.putHTTPCharToTable(keys, value);
+					//System.out.print(" "+keys+" "+value);
+				}
+				//System.out.println();
+			}
+		}
+		else {
+			System.out.println("\ntableCalculatedfrequency is empty");
+		}
+		
+	}
+	//Useful method but didn't use it
+	public HTTPRequest<String> getTableCalcFreqToOneDMap(){
+		return maps;
+	}
+	
+	
+	public HTTPRequest<LinkedHashMap<String, Double>> getTableCalculatedFreq(){
+		return tableCalculatedFreq;
+	}
+	
+	//optional for debugging
+	public void printMaps(){
+		if (maps.getTableOfInitProb().size()>0){
+			System.out.println("\nOne Dimensional Map calculated Frequencies");
+			for (Map.Entry<String, Double> getEntry: maps.getTableOfInitProb().entrySet()){
+				System.out.print(getEntry+",");
+			}
+		}
+		else{
+			System.out.println("Maps is empty size: "+maps.getTableOfInitProb().size());
+		}
 	}
 	
 	public void printFrequencies(){
-		System.out.println("Relative Frequencies size: "+ tableCalculatedFreq.getListOfHttpReq().size());
+		System.out.println("\nRelative Frequencies size: "+ tableCalculatedFreq.getListOfHttpReq().size());
 		for (LinkedHashMap<String, Double> entries: tableCalculatedFreq.getListOfHttpReq()){
 			System.out.println(entries);
 		}
@@ -69,31 +127,3 @@ public class LearningPhase extends TableOfInitialProbabilities {
 		System.out.println("RowSummation: "+ RowSummation.getListOfHttpReq()+ " ");
 	}
 }
-
-/*for (Double getVal: entry.values()){
-sumRowVector = sumRowVector + getVal;
-//rowSum.addHTTPReq(sumRowVector);
-}
-Iterator<Double> sum = entry.values().iterator();
-Iterator<String> calcFreq = entry.keySet().iterator();
-Double sumTotalVal = 0.0;
-
-while (sum.hasNext()){
-sumTotalVal += sum.next();
-
-}
-System.out.println("sumTotalVal: "+sumTotalVal);
-
-String URLPair;
-Double URLCountPerPair =0.0;
-while (calcFreq.hasNext() && sum.hasNext()){
-URLPair = calcFreq.next();
-URLCountPerPair = sum.next();
-System.out.println("URLPair: "+ URLPair+ " URLCountPerPair: "+ URLCountPerPair);
-//Double freq = calcFrequency.getTableOfInitProb().get(URLPair);
-calcFrequency.putHTTPCharToTable(URLPair, (URLCountPerPair/sumTotalVal));
-//System.out.print(calcFrequency.getTableOfInitProb()+ " ");
-}
-System.out.println();
-tableCalculatedFreq.addHTTPReq(calcFrequency.getTableOfInitProb()); 
-*/
