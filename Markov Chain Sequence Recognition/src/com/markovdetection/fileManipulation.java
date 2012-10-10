@@ -1,9 +1,10 @@
 package com.markovdetection;
 
 import java.io.BufferedReader;
-
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
@@ -53,6 +54,7 @@ public class fileManipulation {
 	public HTTPRequest<String> openFileForDetection(){
 		try{///home/dimaz/Documents/IDSTextFiles/CharDistSunSmall2.txt
 			///home/dimaz/Documents/IDSTextFiles/Markov/MarkovDetectSmall.txt
+			///home/dimaz/Documents/IDSTextFiles/CharDistSunday.txt
 			BufferedReader buff = new BufferedReader(new FileReader("/home/dimaz/Documents/IDSTextFiles/CharDistSunday.txt"));
 			try{
 				Double ctr = 0.0;
@@ -86,6 +88,31 @@ public class fileManipulation {
 		}
 	}
 	
+	//Save results of Markov Detection in a text file
+	public void saveLOGMAPResult(HTTPRequest<Double> getResults){
+		
+		try{
+			BufferedWriter writeBuf = new BufferedWriter(new FileWriter("/home/dimaz/Documents/IDSTextFiles/Markov/Result.txt"));
+			try{
+				
+				for (Double getVal: getResults.getListOfHttpReq()){
+					String convDoubleToString = Double.toString(getVal);
+					writeBuf.write(convDoubleToString);
+					writeBuf.newLine();
+				}
+			}
+			finally {
+				writeBuf.close();
+			}
+		}
+		catch(FileNotFoundException e){
+			System.out.println("File not found "+ e);
+		}
+		catch(IOException e){
+			System.out.println(e);
+		}
+		
+	}
 	//optional method used to show map entries of addURL
 	public void showAddURL(){
 		System.out.println("\nAdd URL: ");

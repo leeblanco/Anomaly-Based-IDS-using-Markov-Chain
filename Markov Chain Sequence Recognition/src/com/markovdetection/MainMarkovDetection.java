@@ -55,7 +55,11 @@ public class MainMarkovDetection {
 		//detect.printCountDetectedURLPair();
 		//detect.printobservedMAP();
 		//detect.printMarkovDetection();
+		System.out.println("\nSaving file...");
+		openExploit.saveLOGMAPResult(detect.getStoreValChange());
 		System.out.println("\n\nMarkov Detection Process complete");
+		
+		
 	}
 
 }
